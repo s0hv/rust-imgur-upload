@@ -13,9 +13,11 @@ jobs:
   check-client-id:
     name: Check if imgur client id secret exist
     runs-on: ubuntu-latest
+    env:
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
     steps:
       - name: A/B Check
-        if: ${{ secrets.IMGUR_CLIENT_ID }} == ""
+        if: ${{ env.IMGUR_CLIENT_ID == ""}}
         uses: actions/github-script@v3
         with:
           script: |
