@@ -55,8 +55,8 @@ jobs:
           use-cross: true
           command: build
           args: --release --target ${{ matrix.target }}
-          env:
-            IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+        env:
+          IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
       - name: Publish
         if: github.event_name != 'workflow_dispatch'
