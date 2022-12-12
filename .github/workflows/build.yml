@@ -69,8 +69,22 @@ jobs:
         env:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
+      - name: Run UPX to reduce binary size
+        uses: crazy-max/ghaction-upx@v2
+        with:
+          version: latest
+          files: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
+          args: -q
+
       - name: Publish
         if: github.event_name != 'workflow_dispatch'
         uses: softprops/action-gh-release@v1
         with:
             files: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
+
+      - name: Upload artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v3
+        with:
+          name: imgur-uploader.exe
+          path: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
