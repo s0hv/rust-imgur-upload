@@ -10,8 +10,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-client-id:
+    name: Check if imgur client id secret exist
+    runs-on: ubuntu-latest
+    steps:
+      - name: A/B Check
+        if: ${{ secrets.IMGUR_CLIENT_ID }} == ""
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('IMGUR_CLIENT_ID secret not set!')
   style:
     name: Check Style
+    needs: [check-client-id]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
