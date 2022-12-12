@@ -17,7 +17,7 @@ jobs:
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
     steps:
       - name: A/B Check
-        if: ${{ env.IMGUR_CLIENT_ID == ""}}
+        if: ${{ env.IMGUR_CLIENT_ID == ''}}
         uses: actions/github-script@v3
         with:
           script: |
