@@ -1,12 +1,12 @@
+use reqwest::blocking::Client;
+use serde::Deserialize;
 use std::fs::File;
 use std::io;
 use std::io::Write;
-use reqwest::blocking::Client;
-use serde::{Deserialize};
 
 #[derive(Deserialize)]
 struct ImgurData {
-    link: String
+    link: String,
 }
 
 #[derive(Deserialize)]
@@ -45,7 +45,8 @@ fn main() {
 
     // Do the post request to the imgur api that uploads the image
     let client = Client::new();
-    let res = client.post(api_url)
+    let res = client
+        .post(api_url)
         .header("Authorization", format!("Client-ID {}", client_id))
         .body(file)
         .send();
