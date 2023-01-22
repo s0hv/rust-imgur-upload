@@ -1,8 +1,10 @@
-use reqwest::blocking::Client;
-use serde::Deserialize;
 use std::fs::File;
 use std::io;
 use std::io::Write;
+
+use reqwest::blocking::Client;
+use serde::Deserialize;
+use serde_json;
 
 #[derive(Deserialize)]
 struct ImgurData {
@@ -51,19 +53,33 @@ fn main() {
         .body(file)
         .send();
 
-    // Parse the json response
-    let json = match res {
-        Ok(t) => t.json::<ImgurResponse>(),
+    // Read the response body as text so we can print it in case of an error
+    let text_result = match res {
+        Ok(t) => t.text(),
         Err(error) => {
             return exit_with_message(format!("Error while uploading to imgur: {}", error), 1);
         }
     };
 
-    // Validate the response
+    let text = match text_result {
+        Ok(t) => t,
+        Err(error) => {
+            return exit_with_message(format!("Error while uploading to imgur: {}", error), 1);
+        }
+    };
+
+    // Parse the json
+    let json = serde_json::from_str::<ImgurResponse>(&*text);
     let result = match json {
         Ok(data) => data,
         Err(error) => {
-            return exit_with_message(format!("Error while parsing imgur response: {}", error), 1);
+            return exit_with_message(
+                format!(
+                    "Error while parsing imgur response from {}: {}",
+                    text, error
+                ),
+                1,
+            );
         }
     };
 
