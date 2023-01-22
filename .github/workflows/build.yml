@@ -69,6 +69,9 @@ jobs:
         env:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
+      - name: Strip binary
+        run: strip "target/${{ matrix.target }}/release/imgur-uploader.exe"
+
       - name: Run UPX to reduce binary size
         uses: crazy-max/ghaction-upx@v2
         with:
