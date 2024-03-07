@@ -68,12 +68,12 @@ jobs:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
       - name: Strip binary
-        if: ${{ inputs.skipBinStrip == 'false'}}
+        if: ${{ inputs.skipBinStrip != 'true'}}
         run: strip "target/${{ matrix.target }}/release/imgur-uploader.exe"
 
       - name: Run UPX to reduce binary size
         uses: crazy-max/ghaction-upx@v3
-        if: ${{ inputs.skipBinStrip == 'false'}}
+        if: ${{ inputs.skipBinStrip != 'true'}}
         with:
           version: latest
           files: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
