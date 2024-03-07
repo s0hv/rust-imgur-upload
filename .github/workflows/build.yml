@@ -26,21 +26,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           components: rustfmt
-          profile: minimal
           override: true
 
       - name: cargo fmt -- --check
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
   create-release:
     name: deploy
@@ -51,21 +47,19 @@ jobs:
         target: [ x86_64-pc-windows-gnu ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          profile: minimal
           override: true
           target: ${{ matrix.target }}
 
       - name: Build target
-        uses: actions-rs/cargo@v1
+        uses: houseabsolute/actions-rust-cross@v0
         with:
-          use-cross: true
-          command: build
-          args: --release --locked --target ${{ matrix.target }}
+          target: ${{ matrix.target }}
+          args: --release --locked
         env:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
