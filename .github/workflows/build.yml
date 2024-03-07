@@ -33,7 +33,6 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt
-          override: true
 
       - name: cargo fmt -- --check
         run: cargo fmt --all -- --check
@@ -52,8 +51,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          override: true
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Build target
         uses: houseabsolute/actions-rust-cross@v0
@@ -81,7 +79,7 @@ jobs:
 
       - name: Upload artifact
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@vstable
         with:
           name: imgur-uploader.exe
           path: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
