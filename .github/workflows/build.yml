@@ -6,6 +6,12 @@ on:
     tags:
       - '*'
   workflow_dispatch:
+    inputs:
+      skipBinStrip:
+        description: 'Skip strip and upx'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   check-client-id:
@@ -62,10 +68,12 @@ jobs:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
       - name: Strip binary
+        if: ${{ inputs.skipBinStrip == 'false'}}
         run: strip "target/${{ matrix.target }}/release/imgur-uploader.exe"
 
       - name: Run UPX to reduce binary size
-        uses: crazy-max/ghaction-upx@v2
+        uses: crazy-max/ghaction-upx@v3
+        if: ${{ inputs.skipBinStrip == 'false'}}
         with:
           version: latest
           files: 'target/${{ matrix.target }}/release/imgur-uploader.exe'
