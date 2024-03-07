@@ -53,18 +53,45 @@ fn main() {
         .body(file)
         .send();
 
+    let mut headers_str = "".to_owned();
+
     // Read the response body as text so we can print it in case of an error
     let text_result = match res {
-        Ok(t) => t.text(),
+        Ok(t) => {
+            // Save ratelimit headers as string
+            let headers = t.headers();
+            let header_names = vec![
+                "x-ratelimit-clientremaining",
+                "x-ratelimit-userremaining",
+                "x-ratelimit-userlimit",
+            ];
+
+            for header_name in header_names {
+                match headers.get(header_name) {
+                    Some(value) => {
+                        headers_str.push_str(
+                            format!("\n{}: {}", header_name, value.to_str().unwrap()).as_str(),
+                        );
+                    }
+                    None => {}
+                }
+            }
+
+            // Return text body
+            t.text()
+        }
         Err(error) => {
-            return exit_with_message(format!("Error while uploading to imgur: {}", error), 1);
+            return exit_with_message(format!("Error while uploading to imgur: {}\n", error), 1);
         }
     };
 
     let text = match text_result {
         Ok(t) => t,
         Err(error) => {
-            return exit_with_message(format!("Error while uploading to imgur: {}", error), 1);
+            return exit_with_message(
+                format!("Error while uploading to imgur: {}{}\n", error, headers_str),
+                1,
+            );
         }
     };
 
@@ -75,8 +102,8 @@ fn main() {
         Err(error) => {
             return exit_with_message(
                 format!(
-                    "Error while parsing imgur response from {}: {}",
-                    text, error
+                    "Error while parsing imgur response from {}: {}{}\n",
+                    text, error, headers_str
                 ),
                 1,
             );
